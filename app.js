@@ -2,7 +2,7 @@ var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
-var methodOverride = require("method-override");
+var methodOverride = require("method-override"); // this overrides the basic get post requests and allows for more Update Patch Delete...
 var expressSanitizer = require("express-sanitizer");
 
 //App config
