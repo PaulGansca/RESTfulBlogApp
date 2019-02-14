@@ -1,111 +1,33 @@
-var express = require("express");
-var app = express();
-var bodyParser = require("body-parser");
-var mongoose = require("mongoose");
-var methodOverride = require("method-override"); // this overrides the basic get post requests and allows for more Update Patch Delete...
-var expressSanitizer = require("express-sanitizer");
+//jshint esversion:6
 
-//App config
-var url = process.env.DATABASEURL || "mongodb://localhost/restful_blog_app"
-mongoose.connect(url);
+const express = require("express");
+const bodyParser = require("body-parser");
+const ejs = require("ejs");
 
-app.set("view engine", "ejs")
-app.use(express.static("public"));
+const homeStartingContent = "Lacus vel facilisis volutpat est velit egestas dui id ornare. Semper auctor neque vitae tempus quam. Sit amet cursus sit amet dictum sit amet justo. Viverra tellus in hac habitasse. Imperdiet proin fermentum leo vel orci porta. Donec ultrices tincidunt arcu non sodales neque sodales ut. Mattis molestie a iaculis at erat pellentesque adipiscing. Magnis dis parturient montes nascetur ridiculus mus mauris vitae ultricies. Adipiscing elit ut aliquam purus sit amet luctus venenatis lectus. Ultrices vitae auctor eu augue ut lectus arcu bibendum at. Odio euismod lacinia at quis risus sed vulputate odio ut. Cursus mattis molestie a iaculis at erat pellentesque adipiscing.";
+const aboutContent = "Hac habitasse platea dictumst vestibulum rhoncus est pellentesque. Dictumst vestibulum rhoncus est pellentesque elit ullamcorper. Non diam phasellus vestibulum lorem sed. Platea dictumst quisque sagittis purus sit. Egestas sed sed risus pretium quam vulputate dignissim suspendisse. Mauris in aliquam sem fringilla. Semper risus in hendrerit gravida rutrum quisque non tellus orci. Amet massa vitae tortor condimentum lacinia quis vel eros. Enim ut tellus elementum sagittis vitae. Mauris ultrices eros in cursus turpis massa tincidunt dui.";
+const contactContent = "Scelerisque eleifend donec pretium vulputate sapien. Rhoncus urna neque viverra justo nec ultrices. Arcu dui vivamus arcu felis bibendum. Consectetur adipiscing elit duis tristique. Risus viverra adipiscing at in tellus integer feugiat. Sapien nec sagittis aliquam malesuada bibendum arcu vitae. Consequat interdum varius sit amet mattis. Iaculis nunc sed augue lacus. Interdum posuere lorem ipsum dolor sit amet consectetur adipiscing elit. Pulvinar elementum integer enim neque. Ultrices gravida dictum fusce ut placerat orci nulla. Mauris in aliquam sem fringilla ut morbi tincidunt. Tortor posuere ac ut consequat semper viverra nam libero.";
+
+const app = express();
+
+app.set('view engine', 'ejs');
+
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(expressSanitizer());
-app.use(methodOverride("_method"));
+app.use(express.static("public"));
 
-//Mongoose schema config:title, image, body, date created
-var blogSchema = new mongoose.Schema ({
-    title: String,
-    image: String,
-    body: String,
-    created: {type: Date, default: Date.now}
-});
 
-var Blog = mongoose.model("Blog", blogSchema);
 
-//RESTFUL ROUTES
 
-app.get("/", function(req, res) {
-    res.redirect("/blogs");
-})
-//INDEX route
-app.get("/blogs", function(req, res){
-    Blog.find({}, function(err, blogs){
-        if(err){
-            console.log("ERROR!");
-        } else {
-            res.render("index", {blogs: blogs});
-        }
-    });
-});
 
-//NEW route
-app.get("/blogs/new", function(req, res) {
-    res.render("new");
-});
-//CREATE route
-app.post("/blogs", function(req, res) {
-   //create blog
-    req.body.blog.body = req.sanitize(req.body.blog.body);
-    Blog.create(req.body.blog, function(err, newBlog){
-       if(err){
-           res.render("new");
-       } else {
-            //then, redirect to index
-           res.redirect("/blogs")
-       }
-   });
-});
 
-//SHOW ROUTE
-app.get("/blogs/:id", function(req, res) {
-    Blog.findById(req.params.id, function(err, foundBlog){
-        if(err){
-            res.redirect("/blogs");
-        } else {
-            res.render("show", {blog: foundBlog});
-        }
-    });
-});
 
-//EDIT ROUTE
-app.get("/blogs/:id/edit", function(req, res) {
-    Blog.findById(req.params.id, function(err, foundBlog){
-        if(err){
-            res.redirect("/blogs");
-        } else {
-            res.render("edit", {blog: foundBlog});
-        }
-    });
-});
 
-//UPDATE ROUTE
-app.put("/blogs/:id", function(req, res){
-    req.body.blog.body = req.sanitize(req.body.blog.body);
-    Blog.findByIdAndUpdate(req.params.id, req.body.blog, function(err, updatedBlog){
-        if(err){
-            res.redirect("/blogs");
-        } else {
-            res.redirect("/blogs/" + req.params.id);
-        }
-    })
-});
 
-//DELETE ROUTE
-app.delete("/blogs/:id", function(req, res){
-    //destroy blog
-    Blog.findByIdAndRemove(req.params.id, function(err){
-        if(err){
-            res.redirect("/blogs");
-        } else {
-            //redirect somewhere
-            res.redirect("/blogs");
-        }
-    })
-});
 
-app.listen(process.env.PORT, process.env.IP, function(){
-    console.log("Blog is running");
+
+
+
+
+app.listen(3000, function() {
+  console.log("Server started on port 3000");
 });
