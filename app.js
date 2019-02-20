@@ -70,21 +70,23 @@ app.post("/compose", (req, res) => {
     title: req.body.postTitle,
     body: req.body.postBody
   });
-  post.save();
-
-  res.redirect("/");
+  post.save(() => res.redirect("/"));
 });
 
 app.get("/posts/:postId", (req, res) => {
-  const requestedTitle = _.kebabCase(req.params.postId);
+  const requestedTitle = req.params.postId;
 
-  posts.forEach(post => {
-    if (requestedTitle === _.kebabCase(post.title)) {
+  Post.findOne({
+    _id: requestedTitle
+  }, (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
       res.render("post.ejs", {
-        post: post
+        post: result
       });
     }
-  });
+  })
 });
 
 
